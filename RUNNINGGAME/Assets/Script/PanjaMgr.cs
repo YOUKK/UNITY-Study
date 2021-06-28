@@ -34,15 +34,20 @@ public class PanjaMgr : MonoBehaviour
     [SerializeField]
     private float LastCreateScaleX = 0.0f;
 
-    void NewPanjaLogic()
+    bool NewPanjaLogic()
     {
+		if (LastCreatePosX >= Player.PlayerPos.x + CreateRange)
+		{
+			return false;
+		}
+
         GameObject NewPanja = new GameObject("Panja");
         NewPanja.transform.localScale = new Vector3(UnityEngine.Random.Range(CreateRandomScaleXStart, CreateRandomScaleXEnd), 1.0f, 1.0f);
 
         Vector3 CreatePos = new Vector3();
 
         CreatePos.x = LastCreateScaleX + LastCreatePosX + (NewPanja.transform.localScale.x * 0.5F);
-        CreatePos.x += CreateRandomInterXStart + Random.Range(CreateRandomScaleXStart, CreateRandomScaleXEnd)
+        CreatePos.x += CreateRandomInterXStart + Random.Range(CreateRandomInterXStart, CreateRandomInterXEnd);
         CreatePos.y = UnityEngine.Random.Range(CreateRandomRangeYStart, CreateRandomRangeYEnd);
         CreatePos.z = 0.0f;
         // z를 0으로 해줘야 판자가 카메라의 위치에 생기지 않고 앞에 생김
@@ -56,27 +61,40 @@ public class PanjaMgr : MonoBehaviour
         NewSp.sprite = PanjaSprite;
 
         LastCreatePosX = CreatePos.x;
-        LastCreateScaleX = NewPanja.transform.localScale.x * 0.5F;
+        LastCreateScaleX = (NewPanja.transform.localScale.x * 0.5F);
+
+		NewPanja.AddComponent<BoxCollider>();
+		NewPanja.AddComponent<PanjaScript>();
+
+		return true;
 
         //Debug.Log("CreatePos : " + CreatePos);
         //Debug.Log("NewPanja.transform.localScale : " + NewPanja.transform.position);
     }
 
-    void Start()
-    {
-        for(int i = 0; i < 2; i++)
-        {
-            NewPanjaLogic();
-        }
-    }
+	void CheckPanjaCreate()
+	{
+		while (NewPanjaLogic()) ;
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+	private void Awake()
+	{
+		Debug.Log("판자매니저 어웨이크");
+		CheckPanjaCreate();
+	}
 
-        // 0.0보다는 작지만 가까운 값이 된다.
-        // 왜냐면 델타타임은 절대 정확할 수 없기 때문이다.(수치를 간략화했기 때문)
-        // CreateTime -= Time.deltaTime;
-    }
+	void Start()
+    {
+		
+	}
+
+	// Update is called once per frame
+	void Update()
+    {
+		NewPanjaLogic();
+
+		// 0.0보다는 작지만 가까운 값이 된다.
+		// 왜냐면 델타타임은 절대 정확할 수 없기 때문이다.(수치를 간략화했기 때문)
+		// CreateTime -= Time.deltaTime;
+	}
 }

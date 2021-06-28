@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class PanjaScript : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	private void Start()
+	{
+		
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private void Update()
+	{
+		if (Player.PlayerPos.x - transform.position.x >= 10.0f)
+		{
+			// gameObject : 나를 가지고 있는 오브젝트
+			Destroy(gameObject);
+		}
+	}
 }
